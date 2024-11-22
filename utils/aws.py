@@ -19,3 +19,12 @@ def file_exists_in_s3(bucket, key):
         return True
     except:
         return False
+
+
+def list_objects_in_s3(bucket, prefix):
+    client = boto3.client('s3', region_name='us-west-2')
+    paginator = client.get_paginator('list_objects')
+    page_iterator = paginator.paginate(Bucket='galway-daily-bot-prod', Prefix='threads/')
+    files = sum([page['Contents'] for page in page_iterator], [])
+    files = sorted(files, key=lambda x: x['LastModified'], reverse=True)
+    return files
